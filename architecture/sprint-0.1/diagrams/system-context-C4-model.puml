@@ -1,0 +1,27 @@
+@startuml ArchitectureOverview
+skinparam {
+  shadowing false
+  roundcorner 5
+  defaultFontName Arial
+}
+
+rectangle "Tenant Systems" as tenant_systems {
+  [DU Gto App] as du_app
+  [Celaya Portal] as celaya_portal
+  [Health System] as health_system
+}
+
+rectangle "Plataforma Firmas Digitales" as platform {
+  (Multi-Tenant SaaS)
+  (APIs, Webhooks)
+}
+
+rectangle "PKI Nacional" as pki {
+  [SAT/ACs] as sat
+  [Timestamping] as timestamping
+}
+
+tenant_systems --> platform
+pki --> platform
+
+@enduml

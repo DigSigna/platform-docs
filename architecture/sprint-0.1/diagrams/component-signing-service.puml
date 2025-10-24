@@ -1,0 +1,30 @@
+@startuml SigningFlow
+skinparam {
+  shadowing false
+  roundcorner 5
+  defaultFontName Arial
+}
+
+[API Gateway] as api_gateway
+
+rectangle "Signing Controller" as signing_controller
+
+rectangle "Tenant Policy Service" as policy_service
+
+rectangle "HSM Client" as hsm_client
+
+rectangle "Audit Service" as audit_service
+
+queue "Kafka" as kafka
+
+database "Elasticsearch" as elasticsearch
+
+api_gateway --> signing_controller
+signing_controller --> policy_service
+policy_service --> hsm_client
+
+signing_controller --> audit_service
+audit_service --> kafka
+kafka --> elasticsearch
+
+@enduml

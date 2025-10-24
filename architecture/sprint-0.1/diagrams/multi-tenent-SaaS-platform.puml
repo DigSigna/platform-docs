@@ -1,0 +1,52 @@
+@startuml
+skinparam {
+  shadowing false
+  roundcorner 5
+  defaultFontName Arial
+}
+
+package "TENANTS & CLIENTES" {
+  [DU Gto\n(tenant_gt)] as tenant_gt
+  [DU Celaya\n(tenant_cl)] as tenant_cl
+  [Finanzas\n(tenant_fin)] as tenant_fin
+  [Salud\n(tenant_sal)] as tenant_sal
+  [...] as other_tenants
+}
+
+rectangle "API GATEWAY (TENANT-AWARE)" as api_gateway {
+  rectangle "• Tenant Resolution (Header/Subdomain/API Key)\n• Rate Limiting por Tenant\n• Billing Metering\n• Protocol Adaptation (REST/SOAP/GraphQL)" as gateway_features
+}
+
+package "CORE PLATFORM SERVICES" as core_services {
+  [TENANT MANAGER\n\n• Tenant Onboarding\n• Config Management\n• Billing Engine] as tenant_manager
+  
+  [IDENTITY & AUTH\n\n• Multi-Realm Keycloak\n• SSO Federation] as identity_auth
+  
+  [SIGNING ENGINE\n\n• Tenant-Specific Policies\n• HSM Partition Management\n• Format Support (PAdES/XAdES)] as signing_engine
+}
+
+package "DATA LAYER (ISOLATED)" as data_layer {
+  [PostgreSQL\n\n• Schema-per-Tenant (N)\n• Shared config schema] as postgresql
+  
+  [Redis\n\n• Key-prefix per tenant\n• Isolated cache instances] as redis
+  
+  [AWS S3\n\n• Bucket with tenant prefixes\n• Client-side encryption\n• WORM compliance] as aws_s3
+}
+
+' Conexiones desde tenants al API Gateway
+tenant_gt --> api_gateway
+tenant_cl --> api_gateway
+tenant_fin --> api_gateway
+tenant_sal --> api_gateway
+other_tenants --> api_gateway
+
+' Conexión API Gateway a Core Services
+api_gateway --> core_services : Tenant Context
+
+' Conexiones desde Core Services a Data Layer
+tenant_manager --> postgresql
+identity_auth --> postgresql
+identity_auth --> redis
+signing_engine --> postgresql
+signing_engine --> aws_s3
+@enduml

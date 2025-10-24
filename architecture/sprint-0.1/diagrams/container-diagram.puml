@@ -1,0 +1,32 @@
+@startuml ProcessingFlow
+skinparam {
+  shadowing false
+  roundcorner 5
+  defaultFontName Arial
+}
+
+rectangle "Tenant Apps\n(Various)" as tenant_apps
+
+rectangle "API Gateway" as api_gateway {
+  (Tenant Resolution)
+}
+
+rectangle "Tenant Manager" as tenant_manager {
+  (Onboarding)
+}
+
+rectangle "Core Services" as core_services {
+  (Signing, Auth)
+}
+
+rectangle "Storage Layer" as storage {
+  [HSM/DB/Storage]
+  (Isolated per Tenant)
+}
+
+tenant_apps --> api_gateway
+api_gateway --> tenant_manager
+tenant_manager --> core_services
+core_services --> storage
+
+@enduml

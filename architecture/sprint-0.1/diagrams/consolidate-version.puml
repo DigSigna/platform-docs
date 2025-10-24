@@ -1,0 +1,73 @@
+@startuml CompleteArchitecture
+skinparam {
+  shadowing false
+  roundcorner 5
+  defaultFontName Arial
+}
+
+' === SECCIÓN 1: ARQUITECTURA GENERAL ===
+package "Tenant Systems" as tenants {
+  [DU Gto App] as du_app
+  [Celaya Portal] as celaya_portal
+  [Health System] as health_system
+}
+
+cloud "Plataforma Firmas Digitales" as platform {
+  (Multi-Tenant SaaS)
+  (APIs, Webhooks)
+}
+
+cloud "PKI Nacional" as pki {
+  [SAT/ACs] as sat
+  [Timestamping] as timestamping
+}
+
+' === SECCIÓN 2: FLUJO PRINCIPAL ===
+rectangle "Tenant Apps" as tenant_apps
+
+rectangle "API Gateway" as api_gateway {
+  (Tenant Resolution)
+}
+
+rectangle "Tenant Manager" as tenant_manager {
+  (Onboarding)
+}
+
+rectangle "Core Services" as core_services {
+  (Signing, Auth)
+}
+
+database "HSM/DB/Storage" as storage
+
+' === SECCIÓN 3: FLUJO DE FIRMA ===
+rectangle "Signing Controller" as signing_controller
+
+rectangle "Tenant Policy Service" as policy_service
+
+rectangle "HSM Client" as hsm_client
+
+rectangle "Audit Service" as audit_service
+
+queue "Kafka" as kafka
+
+database "Elasticsearch" as elasticsearch
+
+' === CONEXIONES ===
+tenants --> platform
+pki --> platform
+
+tenant_apps --> api_gateway
+api_gateway --> signing_controller
+signing_controller --> policy_service
+policy_service --> hsm_client
+hsm_client --> storage
+
+signing_controller --> audit_service
+audit_service --> kafka
+kafka --> elasticsearch
+
+api_gateway --> tenant_manager
+tenant_manager --> core_services
+core_services --> storage
+
+@enduml

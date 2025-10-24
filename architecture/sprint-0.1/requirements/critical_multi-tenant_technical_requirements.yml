@@ -1,0 +1,11 @@
+Functional:
+  - Onboarding automatizado de nuevos tenants
+  - APIs versionadas y documentadas por tenant
+  - Configuración específica por cliente (políticas de firma, UI)
+  - Métricas y facturación por uso por tenant
+
+Non-Functional:
+  - Aislamiento de datos: 100% segregación entre tenants
+  - Performance: Latencia consistente independiente del número de tenants
+  - Escalabilidad: Onboarding sin downtime
+  - Security: Zero-trust entre tenants

@@ -1,0 +1,38 @@
+@startuml DevelopmentFlow
+skinparam {
+  shadowing false
+  roundcorner 5
+  defaultFontName Arial
+}
+
+[Author] as author
+
+rectangle "Feature Branch" as feature_branch
+
+rectangle "Crea PR" as create_pr
+
+rectangle "Open PR" as open_pr
+
+rectangle "Tech Lead Review" as tech_review
+
+rectangle "Comments\n& Suggestions" as comments
+
+rectangle "Architect Review" as arch_review
+
+rectangle "Approval" as approval
+
+rectangle "Merge a main" as merge
+
+rectangle "Documentación\nversionada oficial" as docs
+
+author --> feature_branch
+author --> create_pr
+create_pr --> open_pr
+open_pr --> tech_review
+tech_review --> comments
+comments --> arch_review
+arch_review --> approval
+approval --> merge
+merge --> docs
+
+@enduml
