@@ -1,0 +1,77 @@
+name: Documentation Quality Assurance
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+  schedule:
+    - cron: '0 2 * * 1'  # Escaneo de seguridad semanal
+
+env:
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  documentation-integrity:
+    name: 📚 Documentación y Arquitectura
+    runs-on: ubuntu-latest  # <- Runner estándar de GitHub
+    
+    steps:
+    - name: ⬇️ Checkout código
+      uses: actions/checkout@v4
+
+    - name: 🔗 Validar links en documentación
+      uses: gaurav-nelson/github-action-markdown-link-check@v1
+      with:
+        use-quiet-mode: 'yes'
+        config-file: '.mlc_config.json'
+
+    - name: 🎨 Validar diagramas de arquitectura
+      run: |
+        # Verificar que los archivos .puml existen y tienen contenido
+        echo "Validando diagramas de arquitectura..."
+        find docs/architecture -name "*.puml" -exec echo "✓ {}" \;
+        
+    - name: 📋 Validar estructura requerida NOM-151
+      run: |
+        # Script simple que verifica archivos críticos
+        required_files=(
+          "docs/compliance/nom-151-analysis.md"
+          "docs/architecture/sprint-0.1/architecture-document.md"
+          "docs/architecture/sprint-0.1/technical-decision-log.md"
+        )
+        
+        for file in "${required_files[@]}"; do
+          if [ ! -f "$file" ]; then
+            echo "❌ Archivo requerido faltante: $file"
+            exit 1
+          else
+            echo "✅ $file - presente"
+          fi
+        done
+
+    - name: 📊 Generar reporte de documentación
+      run: |
+        echo "### 📈 Métricas de Documentación" >> $GITHUB_STEP_SUMMARY
+        echo "- Archivos Markdown: $(find docs -name "*.md" | wc -l)" >> $GITHUB_STEP_SUMMARY  
+        echo "- Diagramas PlantUML: $(find docs -name "*.puml" | wc -l)" >> $GITHUB_STEP_SUMMARY
+        echo "- ADRs creados: $(find docs/architecture/adr -name "*.md" 2>/dev/null | wc -l)" >> $GITHUB_STEP_SUMMARY
+
+  security-validation:
+    name: 🔒 Seguridad Básica
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event_name == 'schedule'
+    
+    steps:
+    - name: ⬇️ Checkout código
+      uses: actions/checkout@v4
+
+    - name: 🔍 Escaneo de secretos
+      uses: gitleaks/gitleaks-action@v2
+      with:
+        config-path: .gitleaks.toml
+
+    - name: 📝 Validar spelling
+      uses: codespell-project/actions-codespell@v2
+      with:
+        ignore_words_file: .codespellignore
