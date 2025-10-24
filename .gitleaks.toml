@@ -1,0 +1,3 @@
+title = "gitleaks config for documentation"
+[extend]
+useDefault = true

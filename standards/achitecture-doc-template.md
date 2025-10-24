@@ -2,7 +2,7 @@
 
 ## Metadata
 - **Autor:** [Nombre]
-- **Fecha:** [YYYY-MM-DD]
+- **Fecha:** [DD-MM-YYYY]
 - **Estado:** [DRAFT | REVIEW | APPROVED]
 - **Revisores:** [Lista de revisores]
 
