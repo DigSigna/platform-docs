@@ -104,3 +104,8 @@ jobs:
 
     - name: 📝 Validar spelling
       uses: codespell-project/actions-codespell@v2
+      with:
+        ignore_words_file: .codespellignore
+        skip: "*.puml,*.json"
+        check_filenames: false
+        check_hidden: false
