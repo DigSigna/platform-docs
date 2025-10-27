@@ -2,7 +2,7 @@ name: Documentation Quality Assurance
 
 on:
   push:
-    branches: [ dev, features/* ]
+    branches: [ main, dev, features/* ]
   pull_request:
     branches: [ main, dev ]
 
@@ -55,37 +55,12 @@ jobs:
           fi
         fi
 
-    # - name: 📋 Validar estructura requerida NOM-151
-    #   run: |
-    #     echo "## 📋 Validación NOM-151" >> $GITHUB_STEP_SUMMARY
-        
-    #     # Archivos requeridos para cumplimiento
-    #     required_files=(
-    #       "docs/compliance/nom-151-analysis.md"
-    #     )
-        
-    #     missing_files=0
-    #     for file in "${required_files[@]}"; do
-    #       if [ ! -f "$file" ]; then
-    #         echo "❌ $file - FALTANTE" >> $GITHUB_STEP_SUMMARY
-    #         missing_files=$((missing_files + 1))
-    #       else
-    #         echo "✅ $file - presente" >> $GITHUB_STEP_SUMMARY
-    #       fi
-    #     done
-        
-    #     if [ "$missing_files" -gt 0 ]; then
-    #       echo "❌ Faltan $missing_files archivos requeridos para NOM-151" >> $GITHUB_STEP_SUMMARY
-    #       exit 1
-    #     fi
-
     - name: 📊 Generar reporte de documentación
       run: |
         echo "## 📊 Métricas de Documentación" >> $GITHUB_STEP_SUMMARY
         echo "- 📄 Archivos Markdown: $(find docs -name "*.md" 2>/dev/null | wc -l)" >> $GITHUB_STEP_SUMMARY  
         echo "- 🎨 Diagramas PlantUML: $(find docs -name "*.puml" 2>/dev/null | wc -l)" >> $GITHUB_STEP_SUMMARY
         echo "- 📝 ADRs creados: $(find docs -name "*.md" -path "*/adr/*" 2>/dev/null | wc -l)" >> $GITHUB_STEP_SUMMARY
-    # echo "- 📋 Documentos compliance: $(find docs/compliance -name "*.md" 2>/dev/null | wc -l)" >> $GITHUB_STEP_SUMMARY
 
   security-validation:
     name: 🔒 Seguridad Básica
@@ -100,14 +75,23 @@ jobs:
         echo "## 🔍 Escaneo de Secretos" >> $GITHUB_STEP_SUMMARY
         FOUND_SECRETS=0
         
-        # Patrones comunes de secretos
-        if grep -r --include="*.md" --include="*.yaml" --include="*.yml" -i "password.*=.*['\\\"][^\\s'\\\"]+" .; then
+        # Patrones simples y confiables para secretos
+        echo "Buscando patrones de contraseñas..."
+        if grep -r --include="*.md" --include="*.yaml" --include="*.yml" -i -E "password\s*[=:]\s*['\\\"][^[:space:]]+" .; then
           echo "❌ Posible contraseña expuesta" >> $GITHUB_STEP_SUMMARY
           FOUND_SECRETS=1
         fi
         
-        if grep -r --include="*.md" --include="*.yaml" --include="*.yml" -i "api._key.*=.*['\\\"][^\\s'\\\"]+" .; then
+        echo "Buscando patrones de API keys..."
+        if grep -r --include="*.md" --include="*.yaml" --include="*.yml" -i -E "api[_-]?key\s*[=:]\s*['\\\"][^[:space:]]+" .; then
           echo "❌ Posible API key expuesta" >> $GITHUB_STEP_SUMMARY
+          FOUND_SECRETS=1
+        fi
+        
+        # Patrón adicional para tokens
+        echo "Buscando patrones de tokens..."
+        if grep -r --include="*.md" --include="*.yaml" --include="*.yml" -i -E "token\s*[=:]\s*['\\\"][^[:space:]]+" .; then
+          echo "❌ Posible token expuesto" >> $GITHUB_STEP_SUMMARY
           FOUND_SECRETS=1
         fi
         
