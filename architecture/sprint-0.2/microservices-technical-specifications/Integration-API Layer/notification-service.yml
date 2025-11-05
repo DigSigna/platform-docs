@@ -1,0 +1,17 @@
+Tecnología: Spring Boot 3 + Apache Camel
+Base de Datos: PostgreSQL (schema notifications_tenant_{id})
+Responsabilidades:
+  - Comunicaciones multi-canal
+  - Plantillas personalizables
+  - Gestión preferencias
+  - Tracking entregas
+
+Canales Soportados:
+  - Email (SMTP/SES)
+  - SMS (Twilio)
+  - Push notifications
+  - Webhooks
+
+APIs:
+  - POST /api/v1/notifications       # Enviar notificación
+  - GET  /api/v1/notifications/templates # Plantillas

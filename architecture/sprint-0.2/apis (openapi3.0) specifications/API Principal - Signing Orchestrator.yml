@@ -1,0 +1,229 @@
+openapi: 3.0.3
+info:
+  title: Firma Digital API
+  version: 1.0.0
+  description: API para servicios de firma digital multi-tenant
+  contact:
+    name: Plataforma Firmas Digitales
+    url: https://firmas.gob.mx
+
+servers:
+  - url: https://api.firmas.gob.mx/v1
+    description: Production API
+  - url: https://api.sandbox.firmas.gob.mx/v1  
+    description: Sandbox API
+
+paths:
+  /signing/sessions:
+    post:
+      tags:
+        - Signing
+      summary: Crear sesión de firma
+      description: Inicia una nueva sesión de firma digital
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SigningSessionRequest'
+      responses:
+        '201':
+          description: Sesión creada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SigningSession'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /signing/sessions/{sessionId}:
+    get:
+      tags:
+        - Signing
+      summary: Obtener estado de sesión
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Estado de sesión
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SigningSession'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /documents/upload:
+    post:
+      tags:
+        - Documents
+      summary: Subir documento para firma
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                metadata:
+                  $ref: '#/components/schemas/DocumentMetadata'
+      responses:
+        '201':
+          description: Documento subido exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+  schemas:
+    SigningSessionRequest:
+      type: object
+      required:
+        - profile
+        - documents
+        - signers
+      properties:
+        profile:
+          type: string
+          enum: [BASIC, ADVANCED, QUALIFIED]
+          description: Perfil de firma según eIDAS
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/DocumentReference'
+        signers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Signer'
+        callbackUrl:
+          type: string
+          format: uri
+          description: URL para notificación de finalización
+
+    DocumentReference:
+      type: object
+      required:
+        - documentId
+        - name
+      properties:
+        documentId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        signatureField:
+          type: string
+          description: Campo de firma en PDF (opcional)
+
+    Signer:
+      type: object
+      required:
+        - userId
+        - certificateId
+      properties:
+        userId:
+          type: string
+          format: uuid
+        certificateId:
+          type: string
+          format: uuid
+        order:
+          type: integer
+          description: Orden de firma en flujo multi-firmante
+
+    SigningSession:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [CREATED, IN_PROGRESS, COMPLETED, FAILED, CANCELLED]
+        createdAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/SignedDocument'
+        signers:
+          type: array
+          items:
+            $ref: '#/components/schemas/SessionSigner'
+
+    DocumentMetadata:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        retentionYears:
+          type: integer
+          default: 5
+
+  responses:
+    BadRequest:
+      description: Solicitud mal formada
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: No autorizado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Recurso no encontrado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            type: string
+        timestamp:
+          type: string
+          format: date-time

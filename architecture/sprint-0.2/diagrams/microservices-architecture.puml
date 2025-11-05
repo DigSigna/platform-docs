@@ -1,0 +1,61 @@
+@startuml microservicesArchitecture
+skinparam nodesep 10
+skinparam ranksep 20
+skinparam rectangle {
+  BackgroundColor White
+  BorderColor Black
+  RoundCorner 10
+}
+
+title Arquitectura Microservicios - Plataforma Firmas Digitales
+
+package "CAPA SEGURIDAD & IDENTIDAD" {
+  rectangle "identity-service\nBFF Pattern" as A1
+  rectangle "authn-service\nAutenticación" as A2
+  rectangle "authz-service\nAutorización" as A3
+}
+
+package "CAPA CERTIFICACIÓN & CLAVES" {
+  rectangle "certificate-service\nGestión Certificados" as B1
+  rectangle "hsm-gateway\nAbstracción HSM" as B2
+  rectangle "ocsp-service\nValidación" as B3
+}
+
+package "CAPA FIRMAS & DOCUMENTOS" {
+  rectangle "signing-orchestrator\nOrquestación" as C1
+  rectangle "pdf-signing-service\nPAdES" as C2
+  rectangle "xml-signing-service\nXAdES" as C3
+  rectangle "document-service\nGestión Doc" as C4
+}
+
+package "CAPA AUDITORÍA & METADATA" {
+  rectangle "audit-service\nAuditoría" as D1
+  rectangle "compliance-service\nCumplimiento" as D2
+  rectangle "timestamp-service\nSellado Temporal" as D3
+}
+
+package "CAPA INTEGRACIÓN & API" {
+  rectangle "api-gateway\nGateway" as E1
+  rectangle "tenant-management\nMulti-tenant" as E2
+  rectangle "notification-service\nComunicaciones" as E3
+}
+
+' Conexiones principales
+E1 --> A1
+A1 --> A2
+A1 --> A3
+
+E1 --> C1
+C1 --> C2
+C1 --> C3
+C1 --> C4
+
+C1 --> B1
+B1 --> B2
+B1 --> B3
+
+C1 --> D1
+C1 --> D2
+C1 --> D3
+
+@enduml

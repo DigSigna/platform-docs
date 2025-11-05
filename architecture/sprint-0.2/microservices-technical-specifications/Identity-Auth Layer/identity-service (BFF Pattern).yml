@@ -1,0 +1,19 @@
+Tecnología: Spring Boot 3 + Spring Security
+Base de Datos: PostgreSQL (schema identity_tenant_{id})
+Responsabilidades:
+  - Agregación de datos de usuario multi-tenant
+  - Session management distribuido
+  - Adaptación frontend-backend
+  - Rate limiting por usuario
+
+APIs Principales:
+  - POST   /api/v1/sessions           # Login
+  - DELETE /api/v1/sessions           # Logout
+  - GET    /api/v1/user/profile       # Perfil usuario
+  - PUT    /api/v1/user/preferences   # Preferencias
+  - GET    /api/v1/tenants/{id}       # Info tenant
+
+Integraciones:
+  - authn-service (gRPC)
+  - authz-service (gRPC)
+  - audit-service (Kafka events)

@@ -1,0 +1,20 @@
+Tecnología: Spring Boot 3 + Kafka + Elasticsearch
+Base de Datos: Elasticsearch (indices por tenant)
+Responsabilidades:
+  - Registro eventos inmutables
+  - Trazabilidad completa
+  - Generación evidencias
+  - Búsqueda y reporting
+
+Eventos Principales:
+  - user.authenticated
+  - document.uploaded
+  - signing.started
+  - signing.completed
+  - certificate.used
+  - certificate.revoked
+
+APIs:
+  - POST /api/v1/events              # Ingresar evento
+  - GET  /api/v1/events/search       # Buscar eventos
+  - GET  /api/v1/events/reports      # Generar reportes

@@ -1,0 +1,24 @@
+Tecnología: Spring Boot 3 + HSM Client Libraries
+Base de Datos: Redis (Cache operaciones)
+Responsabilidades:
+  - Abstracción multi-proveedor HSM
+  - Generación y almacenamiento claves
+  - Operaciones criptográficas
+  - Estrategias fallback
+
+Proveedores Soportados:
+  - Thales Luna HSM 7
+  - AWS CloudHSM
+  - Azure Dedicated HSM
+  - Google Cloud HSM
+
+APIs Internas (gRPC):
+  - GenerateKeyPair()
+  - SignData()
+  - VerifySignature()
+  - GetPublicKey()
+
+Métricas Críticas:
+  - Latencia operaciones: < 100ms
+  - Disponibilidad: 99.99%
+  - Throughput: 1000 ops/sec

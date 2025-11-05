@@ -1,0 +1,18 @@
+Tecnología: Spring Boot 3 + Keycloak Adapter
+Base de Datos: Keycloak (Multi-Realm)
+Responsabilidades:
+  - Validación credenciales multi-protocolo
+  - Gestión MFA (TOTP, SMS, Biometric)
+  - Emisión tokens JWT/OAuth2
+  - Federación identidad
+
+Protocolos Soportados:
+  - SAML 2.0 (Gobierno Mexicano)
+  - OIDC (Empresas)
+  - LDAP/Active Directory
+  - OAuth2 (APIs)
+
+Configuración por Tenant:
+  - Identity Providers específicos
+  - Políticas de contraseña
+  - Configuración MFA

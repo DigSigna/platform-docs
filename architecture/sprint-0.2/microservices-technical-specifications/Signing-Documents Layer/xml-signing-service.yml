@@ -1,0 +1,18 @@
+Tecnología: Spring Boot 3 + Apache Santuario
+Base de Datos: Redis (Cache transformaciones)
+Responsabilidades:
+  - Implementación XAdES
+  - Manejo XML signatures
+  - Transformaciones XSLT
+  - Validación firmas XML
+
+Estándares:
+  - XAdES-BES
+  - XAdES-EPES
+  - XAdES-T
+  - XML-DSig
+
+APIs Internas (gRPC):
+  - SignXml()
+  - ValidateXmlSignature()
+  - ApplyXslt()

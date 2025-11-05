@@ -1,0 +1,12 @@
+Tecnología: Spring Boot 3 + Flyway (DB Migrations)
+Base de Datos: PostgreSQL (schema platform_shared)
+Responsabilidades:
+  - Onboarding nuevos tenants
+  - Gestión configuración
+  - Facturación y métricas
+  - Administración plataforma
+
+APIs (Admin):
+  - POST /api/v1/admin/tenants       # Crear tenant
+  - PUT  /api/v1/admin/tenants/{id}  # Actualizar
+  - GET  /api/v1/admin/tenants/{id}/metrics # Métricas

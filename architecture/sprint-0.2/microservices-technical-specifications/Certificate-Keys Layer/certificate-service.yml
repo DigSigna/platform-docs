@@ -1,0 +1,19 @@
+Tecnología: Spring Boot 3 + Bouncy Castle FIPS
+Base de Datos: PostgreSQL (schema certs_tenant_{id})
+Responsabilidades:
+  - Ciclo de vida certificados X.509
+  - Renewal automático
+  - Revocación (CRL/OCSP)
+  - Integración PKI nacional
+
+APIs:
+  - POST   /api/v1/certificates/request     # Solicitar certificado
+  - PUT    /api/v1/certificates/{id}/renew  # Renovar
+  - DELETE /api/v1/certificates/{id}/revoke # Revocar
+  - GET    /api/v1/certificates/{id}/status # Estado
+
+Modelo de Datos:
+  - certificates: Certificados activos
+  - certificate_requests: Solicitudes
+  - revocations: Revocaciones
+  - certificate_policies: Políticas por tenant
