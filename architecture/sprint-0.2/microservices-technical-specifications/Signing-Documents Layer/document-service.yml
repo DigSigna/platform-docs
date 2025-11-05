@@ -1,0 +1,19 @@
+Tecnología: Spring Boot 3 + AWS S3 SDK
+Base de Datos: PostgreSQL (schema docs_tenant_{id}) + S3
+Responsabilidades:
+  - Almacenamiento documental seguro
+  - Versionado documentos
+  - Metadata extraction
+  - Lifecycle management
+
+Almacenamiento:
+  - Primary: AWS S3 (encrypted)
+  - Metadata: PostgreSQL
+  - Cache: Redis
+  - Backup: Glacier
+
+APIs:
+  - POST /api/v1/documents/upload    # Subir documento
+  - GET  /api/v1/documents/{id}      # Descargar
+  - GET  /api/v1/documents/{id}/meta # Metadata
+  - DELETE /api/v1/documents/{id}    # Eliminar

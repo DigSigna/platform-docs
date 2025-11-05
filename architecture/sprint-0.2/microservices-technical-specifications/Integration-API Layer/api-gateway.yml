@@ -1,0 +1,18 @@
+Tecnología: Spring Cloud Gateway + Redis
+Configuración: Kubernetes Ingress + ConfigMaps
+Responsabilidades:
+  - Enrutamiento multi-tenant
+  - Rate limiting
+  - API composition
+  - Protocol transformation
+
+Configuración por Tenant:
+  - rate_limits: Límites peticiones
+  - allowed_origins: CORS
+  - authentication: Métodos auth
+  - webhooks: URLs notificación
+
+Métricas:
+  - Latencia: < 50ms
+  - Disponibilidad: 99.95%
+  - Throughput: 10,000 req/min

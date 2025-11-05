@@ -1,0 +1,17 @@
+Tecnología: Spring Boot 3 + Bouncy Castle
+Base de Datos: Redis (Cache respuestas)
+Responsabilidades:
+  - Validación estado certificados OCSP
+  - Cache respuestas
+  - Integración PKI nacional
+  - Generación respuestas OCSP
+
+Performance:
+  - Response time: < 100ms
+  - Cache TTL: 5 minutos
+  - Concurrent connections: 1000+
+
+Integraciones:
+  - SAT OCSP (México)
+  - ANF AC
+  - Otros CAs gubernamentales

@@ -1,0 +1,17 @@
+Tecnología: Spring Boot 3 + Bouncy Castle
+Base de Datos: PostgreSQL (schema timestamp_tenant_{id})
+Responsabilidades:
+  - Sellado temporal RFC 3161
+  - Integración TSA externos
+  - Validación sellos
+  - Políticas retención
+
+Proveedores TSA:
+  - ANF AC (México)
+  - GlobalSign TSA
+  - DigiCert Timestamping
+  - Sectigo TSA
+
+APIs:
+  - POST /api/v1/timestamps          # Crear sello
+  - GET  /api/v1/timestamps/{id}/validate # Validar

@@ -1,0 +1,85 @@
+openapi: 3.0.3
+info:
+  title: Tenant Management API
+  version: 1.0.0
+  description: API para administración de tenants
+
+paths:
+  /admin/tenants:
+    post:
+      tags:
+        - Administration
+      summary: Registrar nuevo tenant
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TenantRegistration'
+      responses:
+        '201':
+          description: Tenant creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tenant'
+
+  /admin/tenants/{tenantId}:
+    get:
+      tags:
+        - Administration
+      summary: Obtener información de tenant
+      parameters:
+        - name: tenantId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Información del tenant
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tenant'
+
+components:
+  schemas:
+    TenantRegistration:
+      type: object
+      required:
+        - name
+        - contactEmail
+        - plan
+      properties:
+        name:
+          type: string
+          description: Nombre del tenant
+        contactEmail:
+          type: string
+          format: email
+        plan:
+          type: string
+          enum: [BASIC, PROFESSIONAL, ENTERPRISE]
+        configuration:
+          $ref: '#/components/schemas/TenantConfig'
+
+    TenantConfig:
+      type: object
+      properties:
+        maxUsers:
+          type: integer
+          default: 10
+        maxDocumentsPerMonth:
+          type: integer
+          default: 1000
+        allowedSignatureProfiles:
+          type: array
+          items:
+            type: string
+            enum: [BASIC, ADVANCED, QUALIFIED]
+        retentionYears:
+          type: integer
+          default: 5

@@ -1,0 +1,18 @@
+Tecnología: Spring Boot 3 + Camunda BPMN
+Base de Datos: PostgreSQL (schema signing_tenant_{id})
+Responsabilidades:
+  - Coordinación proceso firma
+  - Validación pre-firma
+  - Gestión flujos multi-firmante
+  - Timeout management
+
+Reglas de Negocio:
+  - Validación compliance NOM-151
+  - Secuenciación firmas
+  - Verificación certificados
+  - Aplicación políticas tenant
+
+APIs:
+  - POST /api/v1/signing/sessions       # Crear sesión
+  - PUT  /api/v1/signing/sessions/{id}  # Actualizar
+  - POST /api/v1/signing/sessions/{id}/execute # Ejecutar

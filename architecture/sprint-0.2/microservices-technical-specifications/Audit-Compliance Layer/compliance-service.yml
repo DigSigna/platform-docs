@@ -1,0 +1,18 @@
+Tecnología: Spring Boot 3 + Drools (Business Rules)
+Base de Datos: PostgreSQL (schema compliance_tenant_{id})
+Responsabilidades:
+  - Validación normas NOM-151, eIDAS
+  - Generación reportes auditoría
+  - Policy enforcement
+  - Certificación procesos
+
+Marcos de Cumplimiento:
+  - NOM-151-SCFI-2016
+  - eIDAS Regulation
+  - RFC 3161 (Timestamping)
+  - Local regulations por tenant
+
+APIs:
+  - POST /api/v1/compliance/validate  # Validar documento
+  - GET  /api/v1/compliance/reports   # Reportes
+  - PUT  /api/v1/compliance/policies  # Actualizar políticas

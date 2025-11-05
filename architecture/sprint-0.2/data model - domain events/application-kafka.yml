@@ -1,0 +1,38 @@
+# application-kafka.yml
+spring:
+  kafka:
+    bootstrap-servers: ${KAFKA_BROKERS:localhost:9092}
+    properties:
+      security.protocol: SSL
+      ssl.truststore.location: /etc/kafka/truststore.jks
+      ssl.truststore.password: ${KAFKA_TRUSTSTORE_PASSWORD}
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+
+    consumer:
+      group-id: audit-service-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.plataforma.firmas.events"
+
+# Topics configuration
+kafka:
+  topics:
+    audit-events:
+      name: platform-audit-events
+      partitions: 10
+      replication-factor: 3
+    signing-events:
+      name: platform-signing-events
+      partitions: 15
+      replication-factor: 3
+    certificate-events:
+      name: platform-certificate-events  
+      partitions: 8
+      replication-factor: 3

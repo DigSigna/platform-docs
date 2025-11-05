@@ -1,0 +1,18 @@
+Tecnología: Spring Boot 3 + PDFBox + Bouncy Castle
+Base de Datos: Redis (Cache documentos)
+Responsabilidades:
+  - Implementación PAdES-BES/B-LT/LTA
+  - Manipulación PDF/A
+  - Visualización firmas
+  - Validación firmas PDF
+
+Formatos Soportados:
+  - PAdES-BASIC
+  - PAdES-BES
+  - PAdES-EPES
+  - PAdES-LTV
+
+APIs Internas (gRPC):
+  - SignPdf()
+  - ValidatePdfSignature()
+  - AddTimestamp()

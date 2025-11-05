@@ -1,0 +1,50 @@
+# Kubernetes Deployment Strategy (Blue-Green)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: signing-service
+  labels:
+    app: signing-service
+    version: v2.0.0
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: signing-service
+      version: v2.0.0
+  template:
+    metadata:
+      labels:
+        app: signing-service
+        version: v2.0.0
+    spec:
+      containers:
+      - name: signing-service
+        image: firmas/signing-service:v2.0.0
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: "kubernetes,multitenant"
+        - name: DATABASE_SCHEMA
+          valueFrom:
+            configMapKeyRef:
+              name: tenant-config
+              key: database-schema
+---
+# Service para routing traffic
+apiVersion: v1
+kind: Service
+metadata:
+  name: signing-service
+  annotations:
+    istio.io/version: canary-v2
+spec:
+  selector:
+    app: signing-service
+  ports:
+  - port: 8080
+    targetPort: 8080
