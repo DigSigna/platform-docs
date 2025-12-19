@@ -1,0 +1,69 @@
+@startuml FlujoCompletoFirmaDigitalX509
+title Flujo Completo de Firma Digital con Certificados
+
+actor "Usuario 1\nDepto A, Tenant 1" as user
+participant "signing-service" as signing
+participant "hsm-service" as hsm
+participant "certificate-service" as cert
+database "HSM\nSoftHSMv2" as softHSM
+
+' == 1. PREPARACIÓN (Una sola vez) ==
+hsm -> softHSM: Generar Master Key Tenant
+hsm -> softHSM: Generar Key Departamento A
+cert -> hsm: Solicitar firma CSR usuario
+hsm -> softHSM: Firmar CSR con key Depto A
+softHSM --> cert: Certificado X.509 usuario
+
+' == 2. PROCESO DE FIRMA DE DOCUMENTO ==
+user -> signing: 1. Sube documento PDF
+
+signing -> signing: 2. Calcular hash SHA-256
+note right: hash_bin = SHA256(document)
+            hash_b64 = base64(hash_bin)
+
+signing -> cert: 3. Obtener certificado usuario
+cert --> signing: Certificado X.509 (base64)
+
+signing -> cert: 4. Validar certificado
+note right: ¿No expirado? ¿No revocado?
+
+signing -> hsm: 5. Firmar hash\nPOST /keys/sign
+note right
+{
+  "key_id": "id_usuario",
+  "hash": "hash_b64",
+  "tenant_id": "tenant_1",
+  "hash_algorithm": "SHA-256"
+}
+end note
+
+hsm -> hsm: 6. Validar tenant ownership
+hsm -> softHSM: 7. Firmar hash con key usuario
+softHSM --> hsm: Firma binaria
+hsm --> signing: Firma base64
+
+signing -> signing: 8. Construir estructura firma
+note right
+  **Paquete de firma PKCS#7:**
+  1. Firma del hash
+  2. Certificado usuario
+  3. Timestamp (opcional)
+  4. Metadatos
+end note
+
+signing -> signing: 9. Incrustar en documento
+signing --> user: 10. Documento firmado
+
+' == 3. VERIFICACIÓN ==
+user -> signing: 11. Verificar firma
+
+signing -> signing: 12. Extraer firma y certificado
+signing -> signing: 13. Calcular hash documento original
+signing -> cert: 14. Validar certificado (OCSP/CRL)
+
+signing -> hsm: 15. Verificar firma\n(PKCS#1 v1.5)
+note right: Verificar que:
+           signature == RSA_Decrypt(hash, public_key)
+
+signing --> user: 16. Resultado verificación
+@enduml

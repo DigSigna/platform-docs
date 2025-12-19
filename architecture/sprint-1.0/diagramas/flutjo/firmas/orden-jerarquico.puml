@@ -1,0 +1,36 @@
+@startuml JerarquiaClavesCertificados
+title Jerarquía de Claves y Certificados - APPROACH CORRECTO
+
+package "Tenant (Organización)" {
+  component "HSM Master Key\nRSA 4096 bits" as master_key
+    
+  package "Departamentos" {
+    component "Depto A\nHSM Key" as dept_a
+    component "Depto B\nHSM Key" as dept_b
+  }
+}
+
+master_key --> dept_a : Firma certificados
+master_key --> dept_b : Firma certificados
+
+package "Usuarios - Certificados" {
+  component "Usuario 1\nCertificado X.509" as user1
+  component "Usuario 2\nCertificado X.509" as user2
+  component "Usuario 3\nCertificado X.509" as user3
+}
+
+dept_a --> user1 : Firma CSR
+dept_a --> user2 : Firma CSR
+dept_b --> user3 : Firma CSR
+
+note right of user1
+  **Certificado contiene:**
+  • Clave pública usuario
+  • Nombre completo
+  • Email
+  • Departamento
+  • Tenant ID
+  • Firma del Tenant
+end note
+
+@enduml

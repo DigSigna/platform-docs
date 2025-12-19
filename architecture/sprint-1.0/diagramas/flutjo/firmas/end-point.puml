@@ -1,0 +1,43 @@
+@startuml EndPointFirmaDigitalX509
+title Endpoints y Flujo para Certificados y Firmas
+
+actor "Admin Dept" as admin
+actor "Usuario" as user
+participant "certificate-service" as cert
+participant "hsm-service" as hsm
+participant "signing-service" as signing
+
+== 1. GENERACIÓN DE CERTIFICADO (Admin) ==
+admin -> cert: POST /api/v1/certificates/generate
+cert -> hsm: POST /api/v1/keys/user-key-pair
+hsm --> cert: { "key_id": "user1_priv" }
+cert -> hsm: GET /api/v1/keys/{key_id}/public-key
+hsm --> cert: public_key_pem
+cert -> cert: Crear CSR con public_key + datos
+cert -> hsm: POST /api/v1/keys/sign-csr
+note right: Firma CSR con dep-key
+hsm --> cert: CSR firmado → Certificado X.509
+cert --> admin: { "key_id": "...", "certificate": "pem" }
+
+== 2. FIRMA DE DOCUMENTO (Usuario) ==
+user -> signing: POST /api/v1/sign
+signing -> signing: Calcular hash SHA-256
+signing -> cert: GET /api/v1/certificates/{key_id}
+cert --> signing: Certificado X.509 (pem)
+signing -> hsm: POST /api/v1/keys/sign
+note right: Firma hash con user_private_key
+hsm --> signing: Firma digital
+signing -> signing: Construir paquete PKCS#7
+signing --> user: Documento firmado
+
+== 3. VERIFICACIÓN (Cualquiera) ==
+user -> signing: POST /api/v1/verify
+signing -> signing: Extraer firma y certificado
+signing -> cert: POST /api/v1/certificates/validate
+cert --> signing: Certificado válido
+signing -> hsm: POST /api/v1/keys/verify
+note right: Verifica firma con public_key del certificado
+hsm --> signing: Resultado verificación
+signing --> user: ✅ Firma válida / ❌ Inválida
+
+@enduml

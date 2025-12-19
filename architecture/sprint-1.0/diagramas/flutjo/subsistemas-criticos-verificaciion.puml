@@ -1,0 +1,64 @@
+@startuml FlujoDetalladoFirmaElectronica
+title Flujo Detallado - Firma Electrónica con Validación
+
+actor "Usuario" as user
+participant "Frontend" as front
+participant "API Gateway" as api
+participant "Servicio Firma" as sign_service
+participant "HSM Manager" as hsm
+participant "Servicio TSA" as tsa
+participant "Validador OCSP" as ocsp
+database "BD Certificados" as cert_db
+database "Logs Auditoría" as audit_logs
+
+group Proceso de Firma
+  user -> front: 1. Sube documento
+  front -> api: 2. Envía documento + tenant-id
+  api -> sign_service: 3. Procesa solicitud
+  
+  sign_service -> cert_db: 4. Obtiene certificado usuario
+  cert_db --> sign_service: Certificado
+  
+  sign_service -> ocsp: 5. Valida certificado (OCSP)
+  ocsp --> sign_service: Válido/Inválido
+  
+  alt Certificado Válido
+    sign_service -> sign_service: 6. Calcula hash (SHA-256)
+    sign_service -> hsm: 7. Solicita firma hash
+    hsm -> hsm: 8. Firma con clave privada
+    hsm --> sign_service: Firma generada
+    
+    sign_service -> tsa: 9. Solicita estampado tiempo
+    tsa --> sign_service: Timestamp token
+    
+    sign_service -> sign_service: 10. Construye documento firmado
+    sign_service -> audit_logs: 11. Registra auditoría
+    
+    sign_service --> api: 12. Retorna documento firmado
+    api --> front: 13. Entrega resultado
+    front --> user: 14. Descarga documento
+  else Certificado Inválido
+    sign_service -> audit_logs: ERROR: Certificado inválido
+    sign_service --> api: Error de validación
+    api --> front: Notifica error
+    front --> user: Muestra error
+  end
+end
+
+group Verificación Posterior
+  user -> front: 15. Sube documento firmado
+  front -> api: 16. Solicita verificación
+  api -> sign_service: 17. Inicia verificación
+  
+  sign_service -> sign_service: 18. Extrae firma y certificado
+  sign_service -> ocsp: 19. Verifica estado certificado
+  sign_service -> tsa: 20. Valida timestamp
+  
+  sign_service -> hsm: 21. Verifica firma criptográfica
+  
+  sign_service -> audit_logs: 22. Registra verificación
+  sign_service --> api: 23. Retorna resultado
+  api --> front: 24. Muestra informe
+  front --> user: 25. Entrega verificación
+end
+@enduml

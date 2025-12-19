@@ -1,0 +1,46 @@
+@startuml HybridAuditClientGo
+skinparam componentStyle rectangle
+
+' Definición de componentes principales
+component "KeyService\n(Application)" as KeyService
+component "CryptoService\n(Application)" as CryptoService
+component "Otros Services\n(Application)" as OtrosServices
+
+' Definición de la interfaz
+interface "input.AuditRecorder\n(Interface)" as AuditInterface
+
+' Definición de componentes de auditoría
+component "audit.New()\n(Factory)" as AuditFactory
+component "audit.Hybrid-Processor" as HybridProcessor
+component "audit.Mock-Recorder" as MockRecorder
+
+' Definición del proceso de selección
+rectangle "Selecciona según strategy" as Strategy
+rectangle "Crea instancia de\ninput.AuditRecorder" as Creator
+
+' Relaciones entre componentes principales e interfaz
+KeyService --> AuditInterface
+CryptoService --> AuditInterface
+OtrosServices --> AuditInterface
+
+' Relaciones de implementación/fábrica
+AuditInterface <.. AuditFactory : <<creates>>
+AuditInterface <.. HybridProcessor : <<implements>>
+AuditInterface <.. MockRecorder : <<implements>>
+
+' Flujo del proceso de creación
+AuditFactory --> Strategy
+Strategy --> Creator
+Creator --> AuditInterface
+
+' Notas explicativas
+note right of AuditFactory
+  Factory method que decide
+  qué implementación crear
+end note
+
+note right of Strategy
+  Estrategia determina qué
+  tipo de auditoría usar
+end note
+@enduml
