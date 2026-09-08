@@ -1,0 +1,40 @@
+@startuml JerarquiaFirmaSeparada
+title Jerarquía de Firma SEPARADA
+
+package "INFRESTRUCTURA PKI (Firma de Certificados)" {
+  component "TENANT MASTER KEY\n(CA Raíz)" as ca_root
+  component "DEPARTMENT KEY A\n(CA Intermedia)" as ca_dept_a
+  component "DEPARTMENT KEY B\n(CA Intermedia)" as ca_dept_b
+  
+  ca_root --> ca_dept_a : Firma certificado\nCA Intermedia
+  ca_root --> ca_dept_b : Firma certificado\nCA Intermedia
+  
+  ca_dept_a --> user1_cert : Firma certificado\nusuario
+  ca_dept_a --> user2_cert : Firma certificado\nusuario
+  ca_dept_b --> user3_cert : Firma certificado\nusuario
+}
+
+package "FIRMA DE DOCUMENTOS (Operación diaria)" {
+  component "USER 1 KEY PAIR" as user1_key
+  component "USER 2 KEY PAIR" as user2_key
+  
+  user1_key --> doc_firma1 : Firma documentos\nCON SU CLAVE PRIVADA
+  user2_key --> doc_firma2 : Firma documentos\nCON SU CLAVE PRIVADA
+}
+
+user1_cert ..> user1_key : Certificado contiene\nclave PÚBLICA de User1
+user2_cert ..> user2_key : Certificado contiene\nclave PÚBLICA de User2
+
+note right of ca_root
+  **ESTA CLAVE SOLO FIRMA:**
+  • Certificados de CA intermedias
+  • NUNCA firma documentos
+end note
+
+note right of user1_key
+  **ESTA CLAVE SÍ FIRMA:**
+  • Documentos del usuario
+  • Usa su CLAVE PRIVADA
+  • NO la clave del tenant
+end note
+@enduml

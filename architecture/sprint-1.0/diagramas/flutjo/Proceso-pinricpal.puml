@@ -1,0 +1,94 @@
+@startuml ProcesoFirmasMultitenant
+!define RECTANGLE_COLOR #FFFFFF
+!define PROCESS_COLOR #E1F5FE
+!define DECISION_COLOR #FFF3E0
+!define TERMINAL_COLOR #F3E5F5
+!define STORAGE_COLOR #E8F5E8
+!define ARROW_COLOR #333333
+
+title Proceso de Firmas Electrónicas Multitenant - Vista Completa
+
+start
+:Inicio Sistema Multitenant;
+
+partition "Registro y Configuración Inicial" {
+  :**1. REGISTRO DE TENANT**;
+  note right
+    • Solicitud de registro
+    • Validación de datos
+    • Creación en BD
+    • Asignación ID único
+  end note
+  
+  :**2. CONFIGURACIÓN HSM**;
+  note right
+    • Generación claves maestras
+    • Configuración partición HSM
+    • Asignación slots criptográficos
+  end note
+  
+  :**3. REGISTRO DE USUARIOS**;
+  note right
+    • Autenticación admin tenant
+    • Creación de usuario
+    • Asignación roles/permisos
+  end note
+  
+  :**4. GENERACIÓN CERTIFICADO**;
+  note right
+    • Solicitud CSR
+    • Validación identidad
+    • Firma CSR con HSM
+    • Emisión certificado
+  end note
+}
+
+partition "Proceso de Firma de Documento" {
+  :**5. AUTENTICACIÓN USUARIO**;
+  
+  :**6. CARGA DOCUMENTO**;
+  
+  :**7. CÁLCULO HASH**;
+  note right: SHA-256/SHA-512
+  
+  if (¿Certificado válido?) then (Sí)
+    :**8. FIRMA DIGITAL EN HSM**;
+    note right
+      • Envío hash a HSM
+      • Firma con clave privada
+      • Generación sello digital
+    end note
+    
+    :**9. ESTAMPADO DE TIEMPO**;
+    note right
+      • Solicitud a TSA
+      • RFC 3161
+    end note
+    
+    :**10. GENERACIÓN DOCUMENTO FIRMADO**;
+  else (No)
+    :**ERROR: Certificado inválido**;
+    stop
+  endif
+}
+
+partition "Entrega y Verificación" {
+  :**11. RETORNO AL USUARIO**;
+  
+  :**12. VERIFICACIÓN POSTERIOR**;
+  note right
+    • Validación sello temporal
+    • Verificación firma digital
+    • Consulta estado certificado
+  end note
+  
+  :**13. ALMACENAMIENTO Y AUDITORÍA**;
+  note right
+    • Archivado documental
+    • Registro en logs
+    • Copias de seguridad
+  end note
+}
+
+stop
+@enduml

@@ -1,0 +1,55 @@
+@startuml SubsistemasCriticosMultitenant
+title Subsistemas Críticos - Arquitectura Multitenant
+
+package "Gestión de Claves HSM" {
+  database "Tenant A\nPartition" as tenantA
+  database "Tenant B\nPartition" as tenantB
+  database "Tenant N\nPartition" as tenantN
+  
+  component "HSM Físico/Cloud" as hsm {
+    component "Gestor de\nParticiones" as partitions
+    component "Generador de\nClaves" as keygen
+    component "Firmador\nCriptográfico" as signer
+  }
+  
+  tenantA --> hsm : Conexión segura
+  tenantB --> hsm : Conexión segura  
+  tenantN --> hsm : Conexión segura
+}
+
+package "Validación de Certificados" {
+  component "Validador de\nCertificados" as validator {
+    (Verificación de\nFechas) as dates
+    (Validación de\nCadena) as chain
+    (Consulta CRL) as crl
+    (Consulta OCSP) as ocsp
+  }
+  
+  dates --> crl
+  crl --> chain
+  crl --> ocsp
+  
+  database "Autoridad Certificadora" as ca
+  database "Servidor OCSP" as ocsp_server
+  database "Lista CRL" as crl_list
+  
+  ocsp --> ocsp_server
+  crl --> crl_list
+  chain --> ca
+}
+
+package "Gestión Multitenant" {
+  component "Router de\nTenants" as router {
+    (Identificación\nTenant) as ident
+    (Enrutamiento a\nHSM específico) as routing
+    (Aislamiento de\ndatos) as isolation
+  }
+  
+  interface "API Gateway" as api
+  
+  api --> router : Request con tenant-id
+  router --> tenantA : Tenant A
+  router --> tenantB : Tenant B
+  router --> tenantN : Tenant N
+}
+@enduml

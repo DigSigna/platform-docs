@@ -1,0 +1,102 @@
+@startuml ProcesosAdicionalesMantenimiento
+title Procesos Adicionales y de Mantenimiento
+
+partition "Procesos de Mantenimiento" {
+  start
+  :Inicio Procesos Mantenimiento;
+  
+  fork
+    :**Rotación de Claves HSM**;
+    note right
+      Periódica o por incidente
+      Backup de claves anteriores
+      Actualización certificados
+    end note
+    
+    :**Revocación de Certificados**;
+    note right
+      Por pérdida o compromiso
+      Fin de relación
+      Actualización CRL/OCSP
+    end note
+    
+    :**Renovación de Certificados**;
+    note right
+      Automática antes de expiración
+      Notificación al usuario
+      Re-emisión automática
+    end note
+  fork again
+    :**Backup/Restore HSM**;
+    note right
+      Copia de seguridad claves
+      Recuperación ante desastres
+      Verificación integridad
+    end note
+    
+    :**Auditoría Criptográfica**;
+    note right
+      Verificación implementación
+      Análisis de vulnerabilidades
+      Reporte de cumplimiento
+    end note
+  end fork
+  
+  :**Sincronización y\nConsolidación**;
+  stop
+}
+
+partition "Procesos de Cumplimiento" {
+  start
+  :Inicio Procesos Cumplimiento;
+  
+  box "Registro y Trazabilidad" #LightBlue
+    component "Sistema de\nLogging" as logs
+    component "Almacén de\nAuditoría" as audit_store
+    component "Generador de\nReportes" as reports
+  end box
+  
+  logs -> audit_store : Almacena eventos
+  audit_store -> reports : Genera reportes
+  
+  :**KYC/Validación Identidad**;
+  :**Retención Documental**;
+  :**Reportes Regulatorios**;
+  stop
+}
+
+partition "Procesos de Integración" {
+  start
+  :Inicio Procesos Integración;
+  
+  component "API REST/SOAP" as api
+  component "Webhooks" as webhooks
+  component "Adaptadores" as adapters
+  
+  api : Proporciona interfaz
+  api --> adapters : Conecta sistemas
+  
+  webhooks : Notificaciones eventos
+  
+  database "LDAP/Active Directory" as ldap
+  database "Sistemas Legados" as legacy
+  
+  adapters --> ldap : Sincronización
+  adapters --> legacy : Integración
+  stop
+}
+
+partition "Formatos de Firma" {
+  frame "Formatos Soportados" {
+    card "PAdES" as pades #LightGreen
+    card "XAdES" as xades #LightGreen  
+    card "CAdES" as cades #LightGreen
+    card "Formatos\nNativos" as native #LightGreen
+  }
+  
+  pades : PDF Advanced\nElectronic Signatures
+  xades : XML Advanced\nElectronic Signatures
+  cades : CMS Advanced\nElectronic Signatures
+  native : Office, Images, etc.
+}
+@enduml

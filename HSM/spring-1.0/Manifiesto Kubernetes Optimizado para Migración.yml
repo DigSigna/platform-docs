@@ -1,0 +1,76 @@
+# k8s/hsm-service-sidecar.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hsm-service
+  labels:
+    app: hsm-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hsm-service
+  template:
+    metadata:
+      labels:
+        app: hsm-service
+    spec:
+      # Volume compartido para tokens HSM
+      volumes:
+      - name: softhsm-tokens
+        emptyDir: {}
+        # En producción: persistentVolumeClaim
+        # - name: softhsm-tokens
+        #   persistentVolumeClaim:
+        #     claimName: hsm-tokens-pvc
+
+      containers:
+      # Contenedor principal - Tu microservicio Go
+      - name: hsm-service
+        image: your-registry/hsm-service:latest
+        env:
+        - name: HSM_MODE
+          value: "sidecar"
+        - name: PKCS11_LIBRARY
+          value: "/usr/lib/softhsm/libsofthsm2.so"
+        volumeMounts:
+        - name: softhsm-tokens
+          mountPath: /var/lib/softhsm/tokens
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "384Mi"
+            cpu: "300m"
+
+      # Sidecar - SoftHSMv2
+      - name: softhsm-sidecar
+        image: your-registry/softhsm:latest
+        env:
+        - name: HSM_USER_PIN
+          valueFrom:
+            secretKeyRef:
+              name: hsm-secrets
+              key: user-pin
+        - name: HSM_SO_PIN
+          valueFrom:
+            secretKeyRef:
+              name: hsm-secrets
+              key: so-pin
+        volumeMounts:
+        - name: softhsm-tokens
+          mountPath: /var/lib/softhsm/tokens
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        # Health check para sidecar
+        livenessProbe:
+          exec:
+            command: [ "softhsm2-util", "--show-slots" ]
+          initialDelaySeconds: 10
+          periodSeconds: 30

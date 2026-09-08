@@ -1,0 +1,22 @@
+@startuml FlujoFirmaDigitalX509
+title Flujo Correcto de Firma Digital con Certificado X.509
+
+start
+:Documento original;
+:Calcular hash del documento\n(SHA-256/SHA-512);
+-> **HASH del documento**;
+
+:Usar clave PRIVADA\npara firmar el hash;
+note right
+  **Firma =**
+  encrypt(HASH, PrivateKey)
+  Esto genera la firma digital
+end note
+
+:Añadir CERTIFICADO\n(clave pública + metadatos);
+:Añadir TIMESTAMP\n(prueba de tiempo);
+:Combinar todo en\nformato estándar (PKCS#7, CMS);
+:Documento firmado;
+stop
+
+@enduml

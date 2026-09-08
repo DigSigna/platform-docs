@@ -1,0 +1,116 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AuditEvent",
+  "description": "Evento de auditoría estándar para microservicios DigSigna",
+  "type": "object",
+  "required": ["id", "service_name", "event_type", "event_action", "actor_type", "timestamp", "success"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Identificador único del evento"
+    },
+    "correlation_id": {
+      "type": "string",
+      "description": "ID para correlacionar eventos entre servicios"
+    },
+    "session_id": {
+      "type": "string",
+      "description": "ID de sesión del usuario/cliente"
+    },
+    "request_id": {
+      "type": "string",
+      "description": "ID de la solicitud HTTP/gRPC"
+    },
+    "service_name": {
+      "type": "string",
+      "enum": ["api-gateway", "identification-service", "hsm-service", "certificate-service", "signing-service", "verification-service", "audit-service"],
+      "description": "Nombre del servicio que genera el evento"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": ["SECURITY", "BUSINESS", "SYSTEM", "PERFORMANCE"],
+      "description": "Categoría del evento"
+    },
+    "event_action": {
+      "type": "string",
+      "description": "Acción específica (CREATE_KEY, SIGN_DOCUMENT, etc.)"
+    },
+    "tenant_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "ID del tenant (opcional si no aplica)"
+    },
+    "resource_id": {
+      "type": "string",
+      "description": "ID del recurso afectado"
+    },
+    "resource_type": {
+      "type": "string",
+      "description": "Tipo de recurso (CRYPTOGRAPHIC_KEY, DOCUMENT, USER, etc.)"
+    },
+    "actor_type": {
+      "type": "string",
+      "enum": ["USER", "SERVICE", "SYSTEM", "EXTERNAL"],
+      "description": "Tipo de actor que realiza la acción"
+    },
+    "actor_id": {
+      "type": "string",
+      "description": "Identificador del actor (user_id, service_name, etc.)"
+    },
+    "success": {
+      "type": "boolean",
+      "description": "Indica si la operación fue exitosa"
+    },
+    "status_code": {
+      "type": "string",
+      "description": "Código de estado (HTTP code, error code, etc.)"
+    },
+    "error_message": {
+      "type": "string",
+      "description": "Mensaje de error en caso de fallo"
+    },
+    "duration_ms": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Duración de la operación en milisegundos"
+    },
+    "ip_address": {
+      "type": "string",
+      "format": "ipv4",
+      "description": "Dirección IP del cliente"
+    },
+    "user_agent": {
+      "type": "string",
+      "description": "User-Agent del cliente"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Metadata adicional específica del evento"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Fecha y hora del evento en UTC"
+    }
+  },
+  "examples": [
+    {
+      "id": "123e4567-e89b-12d3-a456-426614174000",
+      "service_name": "hsm-service",
+      "event_type": "SECURITY",
+      "event_action": "CREATE_KEY",
+      "tenant_id": "123e4567-e89b-12d3-a456-426614174001",
+      "actor_type": "USER",
+      "actor_id": "user-123",
+      "success": true,
+      "timestamp": "2024-01-15T10:30:00Z",
+      "metadata": {
+        "key_size": 2048,
+        "algorithm": "RSA",
+        "key_usage": "SIGNING"
+      }
+    }
+  ]
+}
