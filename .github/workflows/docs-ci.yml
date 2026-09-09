@@ -11,98 +11,93 @@ env:
 
 jobs:
   documentation-integrity:
-    name: 📚 Documentación y Arquitectura
+    name: Documentation and Architecture
     runs-on: ubuntu-latest
-    
+
+    steps:
+    - name: Code checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Documentation link validation
+      uses: gaurav-nelson/github-action-markdown-link-check@v1
+      with:
+        use-quiet-mode: 'yes'
+        config-file: '.mlc_config.json'
+
+    - name: Architecture diagrams validation (recursive)
+      run: |
+        echo "## Diagrams validation" >> $GITHUB_STEP_SUMMARY
+
+        PUML_FILES=$(find . -name "*.puml" -not -path "./.git/*" | wc -l)
+        echo " $PUML_FILES .puml files found" >> $GITHUB_STEP_SUMMARY
+
+        if [ "$PUML_FILES" -eq 0 ]; then
+          echo ".puml files not found" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "### Diagrams found:" >> $GITHUB_STEP_SUMMARY
+          find . -name "*.puml" -not -path "./.git/*" -exec echo "- {}" \; >> $GITHUB_STEP_SUMMARY
+
+          EMPTY_FILES=0
+          while IFS= read -r file; do
+            if [ ! -s "$file" ]; then
+              echo "❌ $file empty" >> $GITHUB_STEP_SUMMARY
+              EMPTY_FILES=$((EMPTY_FILES + 1))
+            fi
+          done < <(find . -name "*.puml" -not -path "./.git/*")
+
+          if [ "$EMPTY_FILES" -gt 0 ]; then
+            echo "❌ $EMPTY_FILES diagrams empty found" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+        fi
+
+    - name: Documentation reporting
+      run: |
+        echo "## Documentation metrics" >> $GITHUB_STEP_SUMMARY
+        echo "- Markdown files: $(find . -name "*.md" -not -path "./.git/*" | wc -l)" >> $GITHUB_STEP_SUMMARY
+        echo "- PlantUML Diagrama: $(find . -name "*.puml" -not -path "./.git/*" | wc -l)" >> $GITHUB_STEP_SUMMARY
+        echo "- ADRs: $(find . -iname "DLT-*.md" -not -path "./.git/*" | wc -l)" >> $GITHUB_STEP_SUMMARY
+
+  security-validation:
+    name: Basic Security Validation
+    runs-on: ubuntu-latest
+
     steps:
     - name: ⬇️ Checkout código
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
-    - name: 🔗 Validar links en documentación
-      uses: gaurav-nelson/github-action-markdown-link-check@v1
-      with:
-        use-quiet-mode: 'yes'
-        config-file: '.mlc_config.json'
-
-    - name: 🎨 Validar diagramas de arquitectura (recursivo)
+    - name: Secrets scan (gitleaks)
+      # Reemplaza el grep casero anterior, que daba falso positivo con
+      # entradas de documentación legítimas como `access_token: "15 minutos"`.
+      # Usa la configuración que ya existe en .gitleaks.toml en la raíz del repo.
+      env:
+        # Versión fijada a propósito: resolver "latest" vía api.github.com sin autenticación
+        # está sujeto a rate limit (60 req/hora) en la IP compartida de los runners de GitHub
+        # Actions, lo que puede volver a poner el CI en rojo de forma intermitente. Actualizar
+        # esta versión manualmente cada cierto tiempo (ver https://github.com/gitleaks/gitleaks/releases).
+        GITLEAKS_VERSION: '8.30.1'
       run: |
-        echo "## 🔍 Validación de Diagramas" >> $GITHUB_STEP_SUMMARY
-        
-        # Buscar recursivamente en toda la estructura
-        PUML_FILES=$(find . -name "*.puml" -path "*/*" 2>/dev/null | wc -l)
-        echo "Encontrados $PUML_FILES archivos .puml" >> $GITHUB_STEP_SUMMARY
-        
-        if [ "$PUML_FILES" -eq 0 ]; then
-          echo "⚠️  No se encontraron diagramas .puml" >> $GITHUB_STEP_SUMMARY
+        echo "## Secrets scan (gitleaks v${GITLEAKS_VERSION})" >> $GITHUB_STEP_SUMMARY
+
+        curl -sSL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" -o gitleaks.tar.gz
+        tar -xzf gitleaks.tar.gz gitleaks
+
+        if ./gitleaks detect --source . --config .gitleaks.toml --redact --verbose; then
+          echo "✅ No secrets found" >> $GITHUB_STEP_SUMMARY
         else
-          echo "### Diagramas encontrados:" >> $GITHUB_STEP_SUMMARY
-          find . -name "*.puml" -path "*/*" 2>/dev/null -exec echo "- {}" \; >> $GITHUB_STEP_SUMMARY
-          
-          # Validación básica de contenido
-          EMPTY_FILES=0
-          for file in $(find . -name "*.puml" -path "*/*" 2>/dev/null); do
-            if [ ! -s "$file" ]; then
-              echo "❌ $file está vacío" >> $GITHUB_STEP_SUMMARY
-              EMPTY_FILES=$((EMPTY_FILES + 1))
-            fi
-          done
-          
-          if [ "$EMPTY_FILES" -gt 0 ]; then
-            echo "❌ Se encontraron $EMPTY_FILES diagramas vacíos" >> $GITHUB_STEP_SUMMARY
-            exit 1
-          fi
-        fi
-
-    - name: 📊 Generar reporte de documentación
-      run: |
-        echo "## 📊 Métricas de Documentación" >> $GITHUB_STEP_SUMMARY
-        echo "- 📄 Archivos Markdown: $(find docs -name "*.md" 2>/dev/null | wc -l)" >> $GITHUB_STEP_SUMMARY  
-        echo "- 🎨 Diagramas PlantUML: $(find docs -name "*.puml" 2>/dev/null | wc -l)" >> $GITHUB_STEP_SUMMARY
-        echo "- 📝 ADRs creados: $(find docs -name "*.md" -path "*/adr/*" 2>/dev/null | wc -l)" >> $GITHUB_STEP_SUMMARY
-
-  security-validation:
-    name: 🔒 Seguridad Básica
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: ⬇️ Checkout código
-      uses: actions/checkout@v4
-
-    - name: 🔍 Escaneo de secretos básico
-      run: |
-        echo "## 🔍 Escaneo de Secretos" >> $GITHUB_STEP_SUMMARY
-        FOUND_SECRETS=0
-        
-        # Patrones simples y confiables para secretos
-        echo "Buscando patrones de contraseñas..."
-        if grep -r --include="*.md" --include="*.yaml" --include="*.yml" -i -E "password\s*[=:]\s*['\\\"][^[:space:]]+" .; then
-          echo "❌ Posible contraseña expuesta" >> $GITHUB_STEP_SUMMARY
-          FOUND_SECRETS=1
-        fi
-        
-        echo "Buscando patrones de API keys..."
-        if grep -r --include="*.md" --include="*.yaml" --include="*.yml" -i -E "api[_-]?key\s*[=:]\s*['\\\"][^[:space:]]+" .; then
-          echo "❌ Posible API key expuesta" >> $GITHUB_STEP_SUMMARY
-          FOUND_SECRETS=1
-        fi
-        
-        # Patrón adicional para tokens
-        echo "Buscando patrones de tokens..."
-        if grep -r --include="*.md" --include="*.yaml" --include="*.yml" -i -E "token\s*[=:]\s*['\\\"][^[:space:]]+" .; then
-          echo "❌ Posible token expuesto" >> $GITHUB_STEP_SUMMARY
-          FOUND_SECRETS=1
-        fi
-        
-        if [ "$FOUND_SECRETS" -eq 0 ]; then
-          echo "✅ No se encontraron secretos expuestos" >> $GITHUB_STEP_SUMMARY
-        else
-          echo "❌ Se encontraron posibles secretos. Revisa los logs." >> $GITHUB_STEP_SUMMARY
+          echo "❌ gitleaks found posible secrets. Check the step logs." >> $GITHUB_STEP_SUMMARY
           exit 1
         fi
 
-    - name: 📝 Validar spelling
+    - name: Spelling validating (informative)
+      # No bloqueante a propósito: este repo mezcla español e inglés según convención
+      # (nombres de archivo en inglés, contenido histórico en español), y el diccionario
+      # en inglés de codespell no distingue eso. Se reporta como referencia, no como gate.
+      continue-on-error: true
       uses: codespell-project/actions-codespell@v2
       with:
         ignore_words_file: .codespellignore
