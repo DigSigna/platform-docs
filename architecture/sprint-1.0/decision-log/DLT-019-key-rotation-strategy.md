@@ -1,7 +1,7 @@
-#  DLT-010: Key Rotation Strategy
+#  DLT-019: Key Rotation Strategy
 
 ## Metadata
-- **Autor:** Ray Torres
+- **Autor:**
 - **Fecha:** 15-01-2026 
 - **Estado:** APPROVED
 - **Revisores:**
@@ -60,3 +60,9 @@ Siempre se debe considerar la implementación de un grace period para las claves
 4. Update K8s secret with new master key
 5. Rolling restart of HSM service pods
 6. Mark old key version as inactive
+
+## Criterio de Aceptación
+Este runbook debe ejecutarse como dry-run al menos una vez en un ambiente no productivo
+antes de considerarse operativo, y repetirse tras cualquier cambio al manejo de slots/PIN
+en `hsm-service` (ver hallazgos de seguridad sobre generación y persistencia de PIN).
+Un runbook documentado pero nunca ensayado no es una mitigación confiable.

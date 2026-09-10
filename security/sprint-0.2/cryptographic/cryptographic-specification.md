@@ -1,5 +1,12 @@
 # Cryptographic Specification
-**Sprint:** 0.2 | **Estado:** Especificación 
+**Sprint:** 0.2 | **Estado:** Especificación
+
+> **Parcialmente superado por `security/sprint-1.0/secrets-management-architecture.md`.**
+> La sección "Data Encryption / Secrets Management" de este documento describe un plan
+> hacia HashiCorp Vault para Sprint 2 que no se ejecutó así: la decisión vigente es
+> K8s Secrets + HKDF por tenant (ver DLT-013 y `secrets-management-architecture.md`),
+> con Vault diferido como migración futura. Las secciones de JWT y Password Hashing
+> de este documento siguen vigentes.
 
 ## JWT Token Security
 ### Estado Actual (Template-Security)

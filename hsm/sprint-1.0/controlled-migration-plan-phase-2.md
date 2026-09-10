@@ -1,5 +1,12 @@
 # Roadmap de Transición
 
+## Prerequisito
+Antes de ejecutar esta migración, confirmar que el bug de persistencia de
+`key_metadata_id` en `hsm_slots` (nunca se guardaba, quedaba `NULL`) está resuelto
+y probado con un reinicio real del bootstrapper. Si no lo está, el HSM dedicado
+nuevo va a fallar al reinicializar los slots exactamente igual que el sidecar
+actual — migrar el volumen de tokens no soluciona ese problema, solo lo traslada.
+
 ```yaml
 phase_1_mvp:
   duration: "2-3 meses"
@@ -45,3 +52,16 @@ kubectl set env deployment/hsm-service HSM_MODE=remote HSM_ENDPOINT=softhsm-serv
 
 # 4. Verificar migración
 kubectl rollout status deployment/hsm-service
+
+## Rollback
+El único paso sin vuelta atrás en el roadmap es "Eliminar sidecar" al final de
+`phase_2_migration` hasta ese punto, revertir es solo repetir el switch de
+configuración en sentido inverso:
+ 
+1. NO eliminar el sidecar hasta validar operación con el HSM remoto por al menos
+   [definir ventana, ej. 24-48h] bajo tráfico real.
+2. Si falla después del corte pero antes de eliminar el sidecar:
+   `kubectl set env deployment/hsm-service HSM_MODE=sidecar` y validar.
+3. Si ya se eliminó el sidecar y falla: requiere restaurar desde el backup de
+   `./tokens-backup/` generado en el paso 2 y redesplegar el sidecar, este
+   camino es más lento, de ahí la importancia de no saltarse el punto 1.
