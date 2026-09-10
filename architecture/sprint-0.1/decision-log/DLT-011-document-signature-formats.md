@@ -1,7 +1,7 @@
 ## DLT-011: Formatos de Firma de Documentos y Estándares
 
 ## Metadata
-- **Autor:** 
+- **Autor:** Ray Torres 
 - **Fecha:** 24-10-2025
 - **Estado:** REVIEW
 - **Revisores:**

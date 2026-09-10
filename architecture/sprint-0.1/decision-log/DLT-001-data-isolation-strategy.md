@@ -1,7 +1,7 @@
 ## DLT-001: Estrategia de Aislamiento de Datos
 
 ## Metadata
-- **Autor:** 
+- **Autor:** Ray Torres 
 - **Fecha:** 24-10-2025
 - **Estado:** REVIEW
 - **Revisores:** 

@@ -1,7 +1,7 @@
 # [Nombre del Documento]
 
 ## Metadata
-- **Autor:** [Nombre]
+- **Autor:** Ray Torres [Nombre]
 - **Fecha:** [DD-MM-YYYY]
 - **Estado:** [DRAFT | REVIEW | APPROVED]
 - **Revisores:** [Lista de revisores]

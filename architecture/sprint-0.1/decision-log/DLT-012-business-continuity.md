@@ -1,7 +1,7 @@
 ## DLT-012: Continuidad de Negocio y Recuperación ante Desastres
 
 ## Metadata
-- **Autor:** 
+- **Autor:** Ray Torres 
 - **Fecha:** 2024-01-15
 - **Estado:** DRAFT
 - **Revisores:** 

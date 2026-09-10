@@ -1,7 +1,7 @@
 ## DLT-002: Estrategia de Diseño API-First
 
 ## Metadata
-- **Autor:** 
+- **Autor:** Ray Torres 
 - **Fecha:** 25-10-2025
 - **Estado:** REVIEW
 - **Revisores:** 

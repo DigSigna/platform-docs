@@ -1,7 +1,7 @@
 #  DLT-018: Arquitectura PKI Híbrida - DigSigna Platform
 
 ## Metadata
-- **Autor:**
+- **Autor:** Ray Torres
 - **Fecha:** 15-01-2026 
 - **Estado:** APPROVED
 - **Revisores:**

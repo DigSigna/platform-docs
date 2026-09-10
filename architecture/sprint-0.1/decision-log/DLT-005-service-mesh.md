@@ -1,7 +1,7 @@
 ## DLT-005: Service Mesh y Comunicación entre Servicios
 
 ## Metadata
-- **Autor:** 
+- **Autor:** Ray Torres 
 - **Fecha:** 24-10-2025
 - **Estado:** REVIEW
 - **Revisores:** 

@@ -1,10 +1,10 @@
 ## DLT-013-Adopción de SoftHSMv2 sobre HSM Hardware
 
 ## Metadata
-- **Autor:**
+- **Autor:** Ray Torres
 - **Fecha:** 10-11-2025
 - **Estado:** APPROVED
-- **Revisores:**
+- **Revisores:** N/A - proyecto individual (autorevisado)
 
 **Contexto:** El proyecto requiere capacidades criptográficas robustas para operaciones de firma digital, inicialmente considerando HSM hardware (Thales Luna/AWS CloudHSM). Sin embargo, se identificaron los siguientes challenges:
 

@@ -1,7 +1,7 @@
 #  DLT-010: Key Rotation Strategy
 
 ## Metadata
-- **Autor:**
+- **Autor:** Ray Torres
 - **Fecha:** 15-01-2026 
 - **Estado:** APPROVED
 - **Revisores:**

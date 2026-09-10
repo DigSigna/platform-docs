@@ -1,7 +1,7 @@
 # DLT-017: Protocolo de Comunicación entre Microservicios - HTTP REST vs gRPC
 
 ## Metadata
-- **Autor:**
+- **Autor:** Ray Torres
 - **Fecha:** 13-01-2026 
 - **Estado:** APPROVED
 - **Revisores:**

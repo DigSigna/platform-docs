@@ -1,7 +1,7 @@
 ## DLT-008: Plataforma de Contenedores y Orquestación
 
 ## Metadata
-- **Autor:** 
+- **Autor:** Ray Torres 
 - **Fecha:** 24-10-2025
 - **Estado:** REVIEW
 - **Revisores:**

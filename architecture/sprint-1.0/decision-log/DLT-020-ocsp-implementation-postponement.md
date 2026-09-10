@@ -1,7 +1,7 @@
 # ADR-020: Postergación de la implementación de OCSP en el Certificate Service
 
 ## Metadata
-- **Autor:**
+- **Autor:** Ray Torres
 - **Fecha:** 15-01-2026 
 - **Estado:** APPROVED
 - **Revisores:**

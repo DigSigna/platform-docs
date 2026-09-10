@@ -1,10 +1,11 @@
-## DLT-014: Cambio de Arquitectura
-
+## DLT-015: Cambio de Arquitectura
+ 
 ## Metadata
-- **Autor:**
+> Reemplaza a [DLT-014](./DLT-014-architecture-change.md): mismo alcance, presupuesto de producción reducido de $74/mes a $24/mes, se agregan deuda técnica asumida y parámetros de upgrade.
+- **Autor:** Ray Torres Ray Torres
 - **Fecha:** 19-11-2025
 - **Estado:** APPROVED
-- **Revisores:**
+- **Revisores:** N/A - proyecto individual. Revisión técnica asistida por Claude (sin revisor humano secundario)
 
 **Introducción:**Este documento define la arquitectura para un sistema de certificación digital basado en microservicios, diseñado para operar dentro de restricciones presupuestarias específicas ($24/mes) mientras mantiene altos estándares de seguridad, escalabilidad y desempeño.
 

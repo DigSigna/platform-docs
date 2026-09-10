@@ -1,7 +1,7 @@
 ## DLT-009: Estrategia de Cumplimiento y Certificación
 
 ## Metadata
-- **Autor:** 
+- **Autor:** Ray Torres 
 - **Fecha:** 24-10-2025
 - **Estado:** DRAFT
 - **Revisores:** 

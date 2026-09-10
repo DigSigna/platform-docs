@@ -1,7 +1,7 @@
 ## DLT-004: Estrategia HSM y Operaciones Criptográficas
 
 ## Metadata
-- **Autor:** 
+- **Autor:** Ray Torres 
 - **Fecha:** 24-10-2025
 - **Estado:** REVIEW
 - **Revisores:**
